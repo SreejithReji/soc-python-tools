@@ -24,3 +24,34 @@ Bulk IP enrichment tool using the VirusTotal API.
 without manually copying each one into VirusTotal.
 
 **Requirements:**
+
+pip install requests python-dotenv
+
+**Usage:**
+1. Add your VirusTotal API key to a `.env` file
+2. Edit the `ip_list` in the script with your suspicious IPs
+3. Run the script
+
+---
+
+## Setup
+pip install requests python-dotenv
+
+Create a `.env` file in the same folder:
+
+VT_API_KEY=your_virustotal_api_key_here
+
+---
+
+## Roadmap — coming soon
+- 📄 Log parser — detect brute force attempts from Windows event logs
+- 📊 Alert triage — pattern detection across SIEM exports
+- 📝 Report generator — auto-generate shift handover reports
+- 🔔 Notification system — Slack/email alerts for watchlist hits
+
+---
+
+## Certifications
+- MSc Cyber Security
+- Certified Ethical Hacker (CEH)
+- CompTIA Security+
