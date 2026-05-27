@@ -4,7 +4,7 @@
 > Every tool in this repository was built to automate something a SOC analyst does manually every single shift.
 
 **Author:** Sreejith Reji | MSc Cyber Security | CEH | CompTIA Security+
-**Role:** SOC Analyst (L1)
+**Role:** ITOC Network Support Engineer
 
 ---
 
