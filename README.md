@@ -4,7 +4,7 @@
 > Every tool in this repository was built to automate something a SOC analyst does manually every single shift.
 
 **Author:** Sreejith Reji | MSc Cyber Security | CEH | CompTIA Security+
-**Role:** ITOC Network Support Engineer
+**Role:** ITOC Network Support Engineer — incoming SOC Analyst (L1)
 
 ---
 
@@ -20,7 +20,7 @@ This repository is the answer to that. Each script here replaces a manual task w
 
 ---
 
-### 🔍 ioc_checker.py
+### 🔍 ioc_checker.py ✅
 **Bulk IP enrichment via the VirusTotal API**
 
 Manually checking IPs in VirusTotal one at a time is one of the most common time sinks in L1 SOC work. This script takes a list of IPs, queries each one against 70+ security vendors automatically, and prints a clear verdict for each one.
@@ -64,6 +64,59 @@ python ioc_checker.py
 
 ---
 
+### ⚡ alert_triage.py ✅
+**Real-time log line triage with watchlist checking and priority scoring**
+
+Paste a raw log line directly into the terminal. The script extracts all key fields using regex, checks the source IP against a configurable watchlist of known bad IPs, and instantly assigns a priority — Critical, High, Medium, or Low — based on layered triage logic.
+
+```
+========================================
+  SOC ALERT TRIAGE SUMMARY
+========================================
+  Source IP        : 185.220.101.45
+  Destination IP   : 10.0.0.15
+  Username         : administrator
+  Failed attempts  : 47
+  Destination port : 4444
+  Known bad IP     : True
+========================================
+  Priority         : 🔴 CRITICAL
+========================================
+```
+
+**Triage logic applied:**
+- Known bad IP + administrator account → **Critical**
+- Known bad IP only → **High**
+- 5+ failed attempts + administrator → **High**
+- 5+ failed attempts → **Medium**
+- Suspicious port (4444, 1337, 9001, 31337) → **Medium**
+- Everything else → **Low**
+
+**SOC use case:** Live alert investigation — paste a log line during triage and get an instant priority verdict without manually checking each field.
+
+**Requirements:** `re` *(standard library — no install needed)*
+
+**Run:**
+```bash
+python alert_triage.py
+```
+
+**Test with this log line:**
+```
+2024-01-15 08:22:47 BLOCK TCP src=185.220.101.45 dst=10.0.0.15 port=4444 user=administrator failed=47
+```
+
+---
+
+### 📊 csv_triage.py *(planned)*
+**Bulk SIEM alert triage from CSV export**
+
+Takes a CSV export of SIEM alerts, scores each one by severity based on configurable rules, classifies by attack type, and outputs a prioritised triage list — so you always work the most critical alerts first.
+
+**SOC use case:** Start of shift bulk triage — feed in the overnight alert export and instantly know which alerts need immediate action and which can wait.
+
+---
+
 ### 📄 log_analyser.py *(in progress)*
 **Automated firewall log parser with alert report generation**
 
@@ -95,21 +148,21 @@ Escalate      : True
 
 ---
 
-### 📊 alert_triage.py *(planned)*
-**Severity scoring and auto-classification from SIEM alert exports**
+### 📝 report_generator.py *(trial version available)*
+**Professional SOC report generation — three report types**
 
-Takes a CSV export of SIEM alerts, scores each one by severity based on configurable rules, classifies by attack type, and outputs a prioritised triage list — so you always work the most critical alerts first.
+Asks the analyst a series of questions and automatically generates a formatted professional report. Supports three report types covering the most common L1 documentation tasks.
 
-**SOC use case:** Start of shift triage — instantly know which alerts need immediate action and which can wait.
+**Report types:**
+- **Escalation report** — structured L1 to L2 handoff with full investigation summary
+- **False positive report** — documented justification for closing an alert
+- **Shift handover report** — end of shift summary for the incoming analyst
 
----
+**SOC use case:** Stop writing the same report fields from scratch every time. Run the script, answer the questions, get a professional formatted report ready to attach to a ticket or send to your team lead.
 
-### 📝 report_generator.py *(planned)*
-**Automated shift handover report**
+**Coming in Phase 3:** PDF output and automated email sending.
 
-Reads the day's alert data and auto-generates a professional shift handover report — alert counts by severity, top source IPs, notable incidents, and outstanding actions. Outputs as a formatted text file or HTML.
-
-**SOC use case:** End of shift — no more manually writing up what happened. Run the script, review the output, send it.
+**Requirements:** `datetime` *(standard library — no install needed)*
 
 ---
 
@@ -137,9 +190,10 @@ The capstone tool. Takes an alert, enriches all IOCs against VirusTotal and Abus
 soc-python-tools/
 │
 ├── ioc_checker.py          ✅ Complete
+├── alert_triage.py         ✅ Complete
 ├── log_analyser.py         🔨 In progress
-├── alert_triage.py         📋 Planned
-├── report_generator.py     📋 Planned
+├── report_generator.py     🔨 Trial version available
+├── csv_triage.py           📋 Planned
 ├── log_monitor.py          📋 Planned
 ├── mini_soar.py            📋 Planned
 │
@@ -179,6 +233,7 @@ ABUSEIPDB_API_KEY=your_abuseipdb_key_here
 **4. Run a tool**
 ```bash
 python ioc_checker.py
+python alert_triage.py
 ```
 
 ---
@@ -210,11 +265,13 @@ Realistic sample log files for testing these tools are maintained in a separate 
 | Skill | Where used |
 |---|---|
 | Python scripting | All tools |
+| Regex | `alert_triage.py`, `log_analyser.py` |
 | REST API integration | `ioc_checker.py`, `mini_soar.py` |
 | JSON parsing | `ioc_checker.py` |
+| If/else triage logic | `alert_triage.py` |
+| Functions | `alert_triage.py`, `ioc_checker.py` |
 | File I/O and log parsing | `log_analyser.py`, `log_monitor.py` |
-| Regex | `log_analyser.py` |
-| Error handling | All tools |
+| Error handling | `alert_triage.py`, all tools |
 | Environment variable management | All tools with API keys |
 | Security automation | `mini_soar.py` |
 | Git and version control | This repository |
