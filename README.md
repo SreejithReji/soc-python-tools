@@ -108,43 +108,64 @@ python alert_triage.py
 
 ---
 
-### 📊 csv_triage.py *(planned)*
-**Bulk SIEM alert triage from CSV export**
+### 🔥 log_analyser_ttp.py ✅
+**Firewall log analyser with threat intel cross-referencing and MITRE ATT&CK mapping**
 
-Takes a CSV export of SIEM alerts, scores each one by severity based on configurable rules, classifies by attack type, and outputs a prioritised triage list — so you always work the most critical alerts first.
-
-**SOC use case:** Start of shift bulk triage — feed in the overnight alert export and instantly know which alerts need immediate action and which can wait.
-
----
-
-### 📄 log_analyser.py *(in progress)*
-**Automated firewall log parser with alert report generation**
-
-Reads a firewall log file line by line, extracts all relevant fields, scores severity, decides whether to escalate, and generates a formatted SOC alert report for every suspicious entry — automatically.
+Reads a firewall log and a JSON threat intelligence feed, cross-references every blocked connection against known malicious IPs, identifies the top offending host, and produces a structured detection report — with a live MITRE ATT&CK reference embedded directly in the output.
 
 ```
-========================================
-  SOC ALERT REPORT — ID #1001
-========================================
-Timestamp     : 2024-01-15 08:22:47
-Source IP     : 185.220.101.45
-Destination   : 10.0.0.15:4444
-Protocol      : TCP
-Username      : administrator
-Alert type    : Brute Force Attempt
-Action        : BLOCK
-Failed logins : 47
-Severity      : 9.5/10
-Blocked       : True
-Escalate      : True
-========================================
+================================================
+         FIREWALL DETECTION REPORT
+================================================
+MITRE Technique  : T1110 - Brute Force
+Tactic           : Lateral Movement / C2
+Reference        : https://attack.mitre.org/techniques/T1110/
+------------------------------------------------
+Total DENY events     : 9
+------------------------------------------------
+TOP OFFENDER
+Source IP    : 10.0.0.5
+Block count  : 7
+------------------------------------------------
+THREAT INTEL MATCHES
+2024-01-15 08:13:01 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+2024-01-15 08:14:02 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+------------------------------------------------
+ASSESSMENT
+Confirmed T1110 Brute Force activity detected.
+Host 10.0.0.5 generated 7 blocked attempts.
+2 connections matched known malicious IPs.
+Recommend isolating host and reviewing endpoint logs.
+================================================
 ```
 
-**SOC use case:** Process an entire shift's worth of firewall logs in seconds rather than reading line by line manually.
+**MITRE ATT&CK coverage:**
 
-**Compatible log formats:** Firewall logs, syslog, custom formats *(regex patterns configurable)*
+| Technique ID | Name | Tactic |
+|---|---|---|
+| T1110 | Brute Force | Credential Access |
+| T1110.001 | Password Guessing | Credential Access |
+| T1071 | Application Layer Protocol | Command & Control |
 
-**Requirements:** `os` `re` *(standard library — no install needed)*
+**SOC use case:** End-of-shift or incident investigation — feed in a firewall log and threat intel export, get a detection report ready to attach to a ticket or escalate to L2. Identifies compromised internal hosts attempting lateral movement or C2 communication.
+
+**Requirements:** `json` `os` `collections` *(all standard library — no install needed)*
+
+**Run:**
+```bash
+python log_analyser_ttp.py
+```
+When prompted:
+```
+Enter the name of the firewall log file: firewall.log
+Enter the name of the threat intelligence file: threat_intel.json
+```
+
+**Input files required:**
+- `firewall.log` — standard firewall log with ALLOW/DENY entries
+- `threat_intel.json` — JSON array of known malicious IPs with risk scores and tags
 
 ---
 
@@ -163,6 +184,15 @@ Asks the analyst a series of questions and automatically generates a formatted p
 **Coming in Phase 3:** PDF output and automated email sending.
 
 **Requirements:** `datetime` *(standard library — no install needed)*
+
+---
+
+### 📊 csv_triage.py *(planned)*
+**Bulk SIEM alert triage from CSV export**
+
+Takes a CSV export of SIEM alerts, scores each one by severity based on configurable rules, classifies by attack type, and outputs a prioritised triage list — so you always work the most critical alerts first.
+
+**SOC use case:** Start of shift bulk triage — feed in the overnight alert export and instantly know which alerts need immediate action and which can wait.
 
 ---
 
@@ -191,7 +221,7 @@ soc-python-tools/
 │
 ├── ioc_checker.py          ✅ Complete
 ├── alert_triage.py         ✅ Complete
-├── log_analyser.py         🔨 In progress
+├── log_analyser_ttp.py     ✅ Complete
 ├── report_generator.py     🔨 Trial version available
 ├── csv_triage.py           📋 Planned
 ├── log_monitor.py          📋 Planned
@@ -234,6 +264,7 @@ ABUSEIPDB_API_KEY=your_abuseipdb_key_here
 ```bash
 python ioc_checker.py
 python alert_triage.py
+python log_analyser_ttp.py
 ```
 
 ---
@@ -260,18 +291,33 @@ Realistic sample log files for testing these tools are maintained in a separate 
 
 ---
 
+## MITRE ATT&CK Coverage
+
+All detection tools in this repository are mapped to MITRE ATT&CK techniques. Each script embeds the relevant technique ID, tactic, and reference URL directly in its output.
+
+| Tool | Technique ID | Technique Name | Tactic |
+|---|---|---|---|
+| log_analyser_ttp.py | T1110 | Brute Force | Credential Access |
+| log_analyser_ttp.py | T1110.001 | Password Guessing | Credential Access |
+| log_analyser_ttp.py | T1071 | Application Layer Protocol | Command & Control |
+| mini_soar.py *(planned)* | T1078 | Valid Accounts | Persistence |
+
+---
+
 ## Skills Demonstrated
 
 | Skill | Where used |
 |---|---|
 | Python scripting | All tools |
-| Regex | `alert_triage.py`, `log_analyser.py` |
+| Regex | `alert_triage.py`, `log_analyser_ttp.py` |
 | REST API integration | `ioc_checker.py`, `mini_soar.py` |
-| JSON parsing | `ioc_checker.py` |
+| JSON parsing | `ioc_checker.py`, `log_analyser_ttp.py` |
+| File I/O and log parsing | `log_analyser_ttp.py`, `log_monitor.py` |
+| Error handling | All tools |
+| Threat intel cross-referencing | `log_analyser_ttp.py` |
+| MITRE ATT&CK TTP mapping | `log_analyser_ttp.py` |
 | If/else triage logic | `alert_triage.py` |
-| Functions | `alert_triage.py`, `ioc_checker.py` |
-| File I/O and log parsing | `log_analyser.py`, `log_monitor.py` |
-| Error handling | `alert_triage.py`, all tools |
+| Dictionary and set operations | `log_analyser_ttp.py` |
 | Environment variable management | All tools with API keys |
 | Security automation | `mini_soar.py` |
 | Git and version control | This repository |
