@@ -3,16 +3,14 @@ import time
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv(r"D:\Python\IOC Checker\.env")
 API_KEY = os.getenv("VT_API_KEY")
+print(f"Key loaded: {API_KEY}")
 # ────────────────────────────────────────────────────────────
 
 # List of IPs you want to check (edit these)
-ip_list = [
-    "8.8.8.8",
-    "1.1.1.1",
-    "185.220.101.1"
-]
+ip_list = input("Enter IP addresses to check (comma-separated): ").split(",")
+ip_list = [ip.strip() for ip in ip_list]
 
 def check_ip(ip):
     url = f"https://www.virustotal.com/api/v3/ip_addresses/{ip}"
@@ -21,11 +19,18 @@ def check_ip(ip):
 
     if response.status_code == 200:
         data = response.json()
+        attr = data["data"]["attributes"]
         stats = data["data"]["attributes"]["last_analysis_stats"]
-        malicious = stats["malicious"]
-        suspicious = stats["suspicious"]
-        harmless  = stats["harmless"]
+        reputation = attr.get("reputation","unknown")
+        country = attr.get("country","unknown")
+        tags = attr.get("tags", [])
+        malicious = stats.get("malicious","unknown")
+        suspicious = stats.get("suspicious","unknown")
+        harmless  = stats.get("harmless","unknown")
         print(f"\n[+] IP: {ip}")
+        print(f"    Reputation: {reputation}")
+        print(f"    Country: {country}")
+        print(f"    Tags: {','.join(tags)}")
         print(f"    Malicious  : {malicious}")
         print(f"    Suspicious : {suspicious}")
         print(f"    Harmless   : {harmless}")
