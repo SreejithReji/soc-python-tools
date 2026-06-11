@@ -24,6 +24,7 @@ This repository is the answer to that. Each script here replaces a manual task w
 **Bulk IP enrichment via the VirusTotal API**
 
 Manually checking IPs in VirusTotal one at a time is one of the most common time sinks in L1 SOC work. This script takes a list of IPs, queries each one against 70+ security vendors automatically, and prints a clear verdict for each one.
+The code has been updated to dynamically enter the IP's to be scanned while running the code rather than hard-coding the IP.
 
 ```
 === SOC IOC Checker — VirusTotal ===
