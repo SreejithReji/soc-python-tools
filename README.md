@@ -30,15 +30,21 @@ The code has been updated to dynamically enter the IP's to be scanned while runn
 === SOC IOC Checker — VirusTotal ===
 
 [+] IP: 185.220.101.45
-    Malicious  : 18
+    Reputation : -21
+    Country    : DE
+    Tags       : tor
+    Malicious  : 17
     Suspicious : 4
-    Harmless   : 52
+    Harmless   : 42
     ⚠️  FLAGGED AS MALICIOUS
 
 [+] IP: 8.8.8.8
+    Reputation : 544
+    Country    : US
+    Tags       :
     Malicious  : 0
     Suspicious : 0
-    Harmless   : 94
+    Harmless   : 55
     ✅ Clean
 
 === Scan complete ===
