@@ -175,6 +175,13 @@ Enter the name of the threat intelligence file: threat_intel.json
 - `threat_intel.json` — JSON array of known malicious IPs with risk scores and tags
 
 ---
+### 🔎 bulk_ioc_enricher ✅
+**Multi-source IP enrichment with automatic MITRE ATT&CK mapping**
+
+Takes multiple IPs, queries both VirusTotal and AbuseIPDB simultaneously, 
+cross-references results, and automatically maps detected TTPs to the 
+MITRE ATT&CK framework — no hardcoding required.    
+---
 
 ### 📝 report_generator.py *(trial version available)*
 **Professional SOC report generation — three report types**
@@ -229,7 +236,8 @@ soc-python-tools/
 ├── ioc_checker.py          ✅ Complete
 ├── alert_triage.py         ✅ Complete
 ├── log_analyser_ttp.py     ✅ Complete
-├── report_generator.py     🔨 Trial version available
+├── bulk_ioc_enricher/      ✅ Complete
+├── report_generator.py     📋 Planned
 ├── csv_triage.py           📋 Planned
 ├── log_monitor.py          📋 Planned
 ├── mini_soar.py            📋 Planned
