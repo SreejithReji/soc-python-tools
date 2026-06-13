@@ -181,6 +181,59 @@ Enter the name of the threat intelligence file: threat_intel.json
 Takes multiple IPs, queries both VirusTotal and AbuseIPDB simultaneously, 
 cross-references results, and automatically maps detected TTPs to the 
 MITRE ATT&CK framework — no hardcoding required.    
+
+=== SOC Bulk IOC Enricher ===
+
+========================================
+IP: 185.220.101.45
+========================================
+[VirusTotal]
+  Reputation       : -21
+  Country          : DE
+  Tags             : tor
+  Malicious        : 17
+  Suspicious       : 4
+  Harmless         : 41
+
+[AbuseIPDB]
+  Confidence Score : 100
+  Total Reports    : 121
+  Whitelisted      : False
+  Usage Type       : Commercial
+  Country Code     : DE
+
+[MITRE ATT&CK]
+  T1071  : Application Layer Protocol
+  Tactic : command-and-control
+  Ref    : https://attack.mitre.org/techniques/T1071/
+
+  T1590  : Gather Victim Network Information
+  Tactic : reconnaissance
+  Ref    : https://attack.mitre.org/techniques/T1590/
+
+Verdict: 🔴 CONFIRMED MALICIOUS — flagged by both sources
+
+========================================
+IP: 8.8.8.8
+========================================
+[VirusTotal]
+  Reputation       : 544
+  Country          : US
+  Tags             :
+  Malicious        : 0
+  Suspicious       : 0
+  Harmless         : 55
+
+[AbuseIPDB]
+  Confidence Score : 0
+  Total Reports    : 135
+  Whitelisted      : True
+  Usage Type       : Content Delivery Network
+  Country Code     : US
+
+Verdict: 🟢 CLEAN
+
+=== Scan complete ===
 ---
 
 ### 📝 report_generator.py *(trial version available)*
@@ -195,7 +248,6 @@ Asks the analyst a series of questions and automatically generates a formatted p
 
 **SOC use case:** Stop writing the same report fields from scratch every time. Run the script, answer the questions, get a professional formatted report ready to attach to a ticket or send to your team lead.
 
-**Coming in Phase 3:** PDF output and automated email sending.
 
 **Requirements:** `datetime` *(standard library — no install needed)*
 
@@ -330,6 +382,8 @@ All detection tools in this repository are mapped to MITRE ATT&CK techniques. Ea
 | File I/O and log parsing | `log_analyser_ttp.py`, `log_monitor.py` |
 | Error handling | All tools |
 | Threat intel cross-referencing | `log_analyser_ttp.py` |
+| Multi-source threat intel correlation | bulk_ioc_enricher |
+| Modular Python architecture | bulk_ioc_enricher, enrichment.py, ttp_mapper.py |
 | MITRE ATT&CK TTP mapping | `log_analyser_ttp.py` |
 | If/else triage logic | `alert_triage.py` |
 | Dictionary and set operations | `log_analyser_ttp.py` |
