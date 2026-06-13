@@ -1,7 +1,0 @@
-[
-    {"ip": "185.220.101.45", "risk_score": 95, "country": "Germany", "tags": ["tor-exit", "malicious"]},
-    {"ip": "45.33.32.156", "risk_score": 78, "country": "USA", "tags": ["scanner"]},
-    {"ip": "10.0.0.5", "risk_score": 12, "country": "Internal", "tags": []},
-    {"ip": "8.8.8.8", "risk_score": 5, "country": "USA", "tags": []},
-    {"ip": "91.108.56.200", "risk_score": 88, "country": "Russia", "tags": ["malicious", "botnet"]}
-]
