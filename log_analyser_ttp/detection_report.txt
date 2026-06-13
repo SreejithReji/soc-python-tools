@@ -1,0 +1,37 @@
+================================================
+         FIREWALL DETECTION REPORT
+================================================
+MITRE Technique  : T1110 - Brute Force
+Tactic           : Lateral Movement / C2
+Reference        : https://attack.mitre.org/techniques/T1110/
+------------------------------------------------
+Total DENY events     : 9
+------------------------------------------------
+TOP OFFENDER
+Source IP    : 10.0.0.5
+Block count  : 7
+------------------------------------------------
+THREAT INTEL MATCHES
+2024-01-15 08:13:01 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+2024-01-15 08:14:02 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+2024-01-15 08:15:11 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+2024-01-15 08:17:44 DENY TCP 10.0.0.5 -> 45.33.32.156:23
+  ↳ Risk Score: 78 | Country: USA | Tags: scanner
+2024-01-15 08:18:22 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+2024-01-15 08:19:01 DENY TCP 10.0.0.8 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+2024-01-15 08:19:45 DENY TCP 10.0.0.5 -> 45.33.32.156:23
+  ↳ Risk Score: 78 | Country: USA | Tags: scanner
+2024-01-15 08:21:03 DENY TCP 10.0.0.5 -> 185.220.101.45:22
+  ↳ Risk Score: 95 | Country: Germany | Tags: tor-exit, malicious
+------------------------------------------------
+ASSESSMENT
+Confirmed T1110 Brute Force activity detected.
+Host 10.0.0.5 generated 7 blocked attempts.
+2 connections matched known malicious IPs.
+Recommend isolating host and reviewing endpoint logs.
+================================================
