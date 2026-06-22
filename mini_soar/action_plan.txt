@@ -1,0 +1,10 @@
+
+├── mini_soar.py          ← the orchestrator, written last
+├── enrichment.py          ← copy from bulk_ioc_enricher, reused as-is
+├── ttp_mapper.py           ← copy from bulk_ioc_enricher, reused as-is
+├── alert_rules.py          ← check_alert() logic, moved from log_monitor.py
+├── severity.py              ← scoring logic, adapted from csv_triage.py
+├── ticket_generator.py      ← create_ticket() + build_html_ticket()
+├── notifier.py               ← send_email()
+├── enterprise-attack.json    ← copy, needed by ttp_mapper.py
+└── live.log                   ← your test log file

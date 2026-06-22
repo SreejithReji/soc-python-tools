@@ -1,0 +1,10 @@
+Jan 15 08:13:01 server sshd[1234]: Failed password for root from 185.220.101.45 port 51422 ssh2
+Jan 15 08:13:02 server sshd[1234]: Failed password for root from 185.220.101.45 port 51423 ssh2
+Jan 15 08:13:04 server sshd[1234]: Failed password for root from 185.220.101.45 port 51424 ssh2
+Jan 15 08:13:10 server sshd[1235]: Invalid user admin from 103.45.67.12 port 39281 ssh2
+Jan 15 08:13:15 server sshd[1236]: Accepted password for sreejith from 192.168.1.20 port 52211 ssh2
+Jan 15 08:13:20 server sshd[1237]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=89.248.167.131 user=root
+Jan 15 08:13:25 server sshd[1238]: Failed password for invalid user test from 45.33.32.156 port 41110 ssh2
+Jan 15 08:13:30 server sshd[1239]: Invalid user oracle from 103.45.67.12 port 39290 ssh2
+Jan 15 08:13:35 server sshd[1240]: Connection closed by 192.168.1.20 port 52211
+Jan 15 08:13:40 server sshd[1241]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=185.220.101.45 user=admin

@@ -1,0 +1,5 @@
+.env
+enterprise-attack.json
+__pycache__/
+*.pyc
+tickets/
