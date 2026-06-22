@@ -1,15 +1,31 @@
-import re
+import json
+
+def level_to_icon(level):
+    if level >= 12:
+        return "🔴"
+    elif level >= 8:
+        return "🟠"
+    elif level >= 5:
+        return "🟡"
+    else:
+        return "🟢"
 
 def check_alert(line):
-    line = line.strip()
-    ip_match = re.search(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", line)
-    ip = ip_match.group() if ip_match else None
+    try:
+        alert = json.loads(line)
+    except json.JSONDecodeError:
+        return None, None, None
 
-    if "Failed password" in line:
-        return "🔴 Possible brute force attempt", ip
-    elif "Invalid user" in line:
-        return "🟠 Unknown user login attempt", ip
-    elif "authentication failure" in line:
-        return "🟡 Authentication issue", ip
-    else:
-        return None, None
+    level = alert["rule"]["level"]
+
+    if level < 5:
+        return None, None, None
+    
+    description = alert["rule"]["description"]
+    icon = level_to_icon(level)
+    message = f"{icon} {description}"
+
+    ip = alert.get("data", {}).get("srcip")
+    mitre_id = alert.get("rule", {}).get("mitre", {}).get("id", [None])[0]
+    return message, ip, mitre_id
+

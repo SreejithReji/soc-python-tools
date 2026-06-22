@@ -9,7 +9,7 @@ import time
 import os
 import ipaddress
 from datetime import datetime, timedelta
-import re
+
 
 TICKET_PREFIX = {
     "Critical": "CRIT",
@@ -42,7 +42,7 @@ def get_file_id(filepath):
     stat = os.stat(filepath)
     return stat.st_ino, stat.st_size
 
-def process_alert(message, ip):
+def process_alert(message, ip, mitre_id):
     if not should_alert(ip):
         return
 
@@ -55,8 +55,12 @@ def process_alert(message, ip):
         vt_data = check_ip_vt(ip)
         ab_data = check_ip_ab(ip)
 
-    ttp_id = "T1110"
-    ttp = lookup_ttp(ttp_id)
+    if mitre_id:
+        ttp_id = mitre_id
+        ttp = lookup_ttp(ttp_id)
+    else:
+        ttp_id = "N/A"
+        ttp = {"name": "Not mapped by Wazuh", "tactic": "unknown", "url": "N/A"}
 
     if vt_data:
         vt_malicious = vt_data.get("malicious", "N/A")
@@ -115,13 +119,13 @@ def process_alert(message, ip):
         to_address="wazuhsiemalertreceiver@gmail.com",
     )
 
-filepath = "live.log"
+filepath = "/var/ossec/logs/alerts/alerts.json"
 
 with open(filepath, "r") as file:
     for line in file:
-            message,ip = check_alert(line)
+            message, ip, mitre_id = check_alert(line)
             if message:
-                process_alert(message,ip)
+                process_alert(message, ip, mitre_id)
 
     file.seek(0, 2)
     last_inode, last_size = get_file_id(filepath)
@@ -141,7 +145,7 @@ with open(filepath, "r") as file:
 
             time.sleep(1)
             continue
-        message,ip = check_alert(line)
+        message, ip, mitre_id = check_alert(line)
         if message:
-            process_alert(message,ip)       
+            process_alert(message, ip, mitre_id)      
 

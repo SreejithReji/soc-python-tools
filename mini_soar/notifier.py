@@ -2,7 +2,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
-from datetime import datetime
+
 
 load_dotenv(r"D:\Python\mini_soar\.env")
 
