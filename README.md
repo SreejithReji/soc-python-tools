@@ -23,8 +23,7 @@ This repository is the answer to that. Each script here replaces a manual task w
 ### 🔍 ioc_checker.py ✅
 **Bulk IP enrichment via the VirusTotal API**
 
-Manually checking IPs in VirusTotal one at a time is one of the most common time sinks in L1 SOC work. This script takes a list of IPs, queries each one against 70+ security vendors automatically, and prints a clear verdict for each one.
-The code has been updated to dynamically enter the IP's to be scanned while running the code rather than hard-coding the IP.
+Manually checking IPs in VirusTotal one at a time is one of the most common time sinks in L1 SOC work. This script takes a list of IPs, queries each one against 70+ security vendors automatically, and prints a clear verdict for each one. The code has been updated to dynamically enter the IPs to be scanned while running the code rather than hard-coding them.
 
 ```
 === SOC IOC Checker — VirusTotal ===
@@ -58,11 +57,13 @@ The code has been updated to dynamically enter the IP's to be scanned while runn
 ```bash
 pip install requests python-dotenv
 ```
+
 Create a `.env` file:
 ```
 VT_API_KEY=your_virustotal_api_key_here
 ```
-Edit `ip_list` in the script and run:
+
+Run:
 ```bash
 python ioc_checker.py
 ```
@@ -156,7 +157,7 @@ Recommend isolating host and reviewing endpoint logs.
 | T1110.001 | Password Guessing | Credential Access |
 | T1071 | Application Layer Protocol | Command & Control |
 
-**SOC use case:** End-of-shift or incident investigation — feed in a firewall log and threat intel export, get a detection report ready to attach to a ticket or escalate to L2. Identifies compromised internal hosts attempting lateral movement or C2 communication.
+**SOC use case:** End-of-shift or incident investigation — feed in a firewall log and threat intel export, get a detection report ready to attach to a ticket or escalate to L2.
 
 **Requirements:** `json` `os` `collections` *(all standard library — no install needed)*
 
@@ -164,6 +165,7 @@ Recommend isolating host and reviewing endpoint logs.
 ```bash
 python log_analyser_ttp.py
 ```
+
 When prompted:
 ```
 Enter the name of the firewall log file: firewall.log
@@ -176,7 +178,91 @@ Enter the name of the threat intelligence file: threat_intel.json
 
 ---
 
-### 📝 report_generator.py *(trial version available)*
+### 🔎 bulk_ioc_enricher ✅
+**Multi-source IP enrichment with automatic MITRE ATT&CK mapping**
+
+Takes multiple IPs, queries both VirusTotal and AbuseIPDB, cross-references results, and automatically maps detected TTPs to the MITRE ATT&CK framework — no hardcoding required. Built as a modular three-file tool: `bulk_ioc_enricher.py`, `enrichment.py`, and `ttp_mapper.py`.
+
+```
+=== SOC Bulk IOC Enricher ===
+
+========================================
+IP: 185.220.101.45
+========================================
+[VirusTotal]
+  Reputation       : -21
+  Country          : DE
+  Tags             : tor
+  Malicious        : 17
+  Suspicious       : 4
+  Harmless         : 41
+
+[AbuseIPDB]
+  Confidence Score : 100
+  Total Reports    : 121
+  Whitelisted      : False
+  Usage Type       : Commercial
+  Country Code     : DE
+
+[MITRE ATT&CK]
+  T1071  : Application Layer Protocol
+  Tactic : command-and-control
+  Ref    : https://attack.mitre.org/techniques/T1071/
+
+  T1590  : Gather Victim Network Information
+  Tactic : reconnaissance
+  Ref    : https://attack.mitre.org/techniques/T1590/
+
+Verdict: 🔴 CONFIRMED MALICIOUS — flagged by both sources
+
+========================================
+IP: 8.8.8.8
+========================================
+[VirusTotal]
+  Reputation       : 544
+  Country          : US
+  Tags             :
+  Malicious        : 0
+  Suspicious       : 0
+  Harmless         : 55
+
+[AbuseIPDB]
+  Confidence Score : 0
+  Total Reports    : 135
+  Whitelisted      : True
+  Usage Type       : Content Delivery Network
+  Country Code     : US
+
+Verdict: 🟢 CLEAN
+
+=== Scan complete ===
+```
+
+**SOC use case:** Multi-source IOC triage — query two threat intelligence feeds simultaneously, get a combined verdict, and see the relevant MITRE ATT&CK techniques automatically pulled from the live framework data.
+
+**Requirements:** `requests` `python-dotenv`
+
+**Setup:**
+```bash
+pip install requests python-dotenv
+```
+
+Create a `.env` file:
+```
+VT_API_KEY=your_virustotal_api_key_here
+ABUSEIPDB_KEY=your_abuseipdb_key_here
+```
+
+Run:
+```bash
+python bulk_ioc_enricher.py
+```
+
+**APIs:** [VirusTotal](https://www.virustotal.com) · [AbuseIPDB](https://www.abuseipdb.com) · [MITRE ATT&CK](https://attack.mitre.org)
+
+---
+
+### 📝 report_generator.py ✅ *(trial version)*
 **Professional SOC report generation — three report types**
 
 Asks the analyst a series of questions and automatically generates a formatted professional report. Supports three report types covering the most common L1 documentation tasks.
@@ -187,8 +273,6 @@ Asks the analyst a series of questions and automatically generates a formatted p
 - **Shift handover report** — end of shift summary for the incoming analyst
 
 **SOC use case:** Stop writing the same report fields from scratch every time. Run the script, answer the questions, get a professional formatted report ready to attach to a ticket or send to your team lead.
-
-**Coming in Phase 3:** PDF output and automated email sending.
 
 **Requirements:** `datetime` *(standard library — no install needed)*
 
@@ -226,20 +310,17 @@ The capstone tool. Takes an alert, enriches all IOCs against VirusTotal and Abus
 ```
 soc-python-tools/
 │
-├── ioc_checker.py          ✅ Complete
-├── alert_triage.py         ✅ Complete
-├── log_analyser_ttp.py     ✅ Complete
-├── report_generator.py     🔨 Trial version available
-├── csv_triage.py           📋 Planned
-├── log_monitor.py          📋 Planned
-├── mini_soar.py            📋 Planned
-│
-├── sample_logs/            Sample log files for testing
-│   └── → see soc-sample-logs repository
-│
-├── .env.example            API key template
-├── requirements.txt        All dependencies
-└── README.md
+├── alert_triage/           ✅ Complete
+├── bulk_ioc_enricher/      ✅ Complete
+│   ├── bulk_ioc_enricher.py
+│   ├── enrichment.py
+│   └── ttp_mapper.py
+├── ioc_checker/            ✅ Complete
+├── log_analyser_ttp/       ✅ Complete
+├── report_generator/       🔨 Trial version available
+├── csv_triage/             📋 Planned
+├── log_monitor/            📋 Planned
+└── mini_soar/              📋 Planned
 ```
 
 ---
@@ -258,20 +339,18 @@ pip install -r requirements.txt
 ```
 
 **3. Set up your API keys**
-```bash
-cp .env.example .env
-```
-Edit `.env` and add your keys:
+
+Create a `.env` file in the tool folder you want to run:
 ```
 VT_API_KEY=your_virustotal_key_here
-ABUSEIPDB_API_KEY=your_abuseipdb_key_here
+ABUSEIPDB_KEY=your_abuseipdb_key_here
 ```
 
 **4. Run a tool**
 ```bash
-python ioc_checker.py
-python alert_triage.py
-python log_analyser_ttp.py
+python ioc_checker/ioc_checker.py
+python alert_triage/alert_triage.py
+python bulk_ioc_enricher/bulk_ioc_enricher.py
 ```
 
 ---
@@ -282,7 +361,7 @@ python log_analyser_ttp.py
 |---|---|---|
 | [VirusTotal](https://www.virustotal.com) | IP, hash, domain reputation | 4 requests/min |
 | [AbuseIPDB](https://www.abuseipdb.com) | IP abuse reports | 1,000 requests/day |
-| [Shodan](https://www.shodan.io) | IP open ports and services | 100 results/month |
+| [MITRE ATT&CK](https://attack.mitre.org) | Threat intelligence framework | Free |
 
 All tools are built around free API tiers — no paid subscriptions required.
 
@@ -307,6 +386,8 @@ All detection tools in this repository are mapped to MITRE ATT&CK techniques. Ea
 | log_analyser_ttp.py | T1110 | Brute Force | Credential Access |
 | log_analyser_ttp.py | T1110.001 | Password Guessing | Credential Access |
 | log_analyser_ttp.py | T1071 | Application Layer Protocol | Command & Control |
+| bulk_ioc_enricher | T1071 | Application Layer Protocol | Command & Control |
+| bulk_ioc_enricher | T1590 | Gather Victim Network Information | Reconnaissance |
 | mini_soar.py *(planned)* | T1078 | Valid Accounts | Persistence |
 
 ---
@@ -317,12 +398,14 @@ All detection tools in this repository are mapped to MITRE ATT&CK techniques. Ea
 |---|---|
 | Python scripting | All tools |
 | Regex | `alert_triage.py`, `log_analyser_ttp.py` |
-| REST API integration | `ioc_checker.py`, `mini_soar.py` |
-| JSON parsing | `ioc_checker.py`, `log_analyser_ttp.py` |
+| REST API integration | `ioc_checker.py`, `bulk_ioc_enricher`, `mini_soar.py` |
+| JSON parsing | `ioc_checker.py`, `log_analyser_ttp.py`, `bulk_ioc_enricher` |
 | File I/O and log parsing | `log_analyser_ttp.py`, `log_monitor.py` |
 | Error handling | All tools |
-| Threat intel cross-referencing | `log_analyser_ttp.py` |
-| MITRE ATT&CK TTP mapping | `log_analyser_ttp.py` |
+| Threat intel cross-referencing | `log_analyser_ttp.py`, `bulk_ioc_enricher` |
+| Multi-source threat intel correlation | `bulk_ioc_enricher` |
+| Modular Python architecture | `bulk_ioc_enricher`, `enrichment.py`, `ttp_mapper.py` |
+| MITRE ATT&CK TTP mapping | `log_analyser_ttp.py`, `bulk_ioc_enricher` |
 | If/else triage logic | `alert_triage.py` |
 | Dictionary and set operations | `log_analyser_ttp.py` |
 | Environment variable management | All tools with API keys |
